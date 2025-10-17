@@ -15,6 +15,8 @@ type NewsModule = {
 const newsImports = {
   "2025-05-01": () =>
     import("@/content/news/2025-05-01.mdx") as Promise<NewsModule>,
+  "2025-10-17": () =>
+    import("@/content/news/2025-10-17.mdx") as Promise<NewsModule>,
 } as const;
 
 export type NewsSlug = keyof typeof newsImports;
