@@ -450,6 +450,8 @@ export const TRANSLATIONS: Record<string, Bilingual> = {
                           en: "e.g. We want to assess structural risk in our vendor remote-access paths." },
   "ct.f.privacy":       { jp: "お預かりした情報は当社の プライバシーポリシー に基づき取り扱います。",
                           en: "Submissions are handled in line with our Privacy Policy." },
+  "ct.f.unavailable":   { jp: "送信エラーが発生しました。お手数ですが、TwitterまたはFacebookからお問い合わせください。",
+                          en: "A submission error occurred. Please contact us via Twitter or Facebook." },
   "ct.f.sent":          { jp: "送信ありがとうございます。担当者よりご連絡いたします。",
                           en: "Thanks for your message. We will be in touch." },
 

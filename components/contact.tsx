@@ -63,6 +63,7 @@ export function ContactForm() {
   const [kind, setKind] = useState("poc");
   const [domain, setDomain] = useState("critical");
   const [topics, setTopics] = useState<Record<string, boolean>>({ vendor: true });
+  const [submitError, setSubmitError] = useState("");
 
   const kinds: Array<[string, string]> = [
     ["poc",     tr(lang, "ct.k.poc")],
@@ -152,9 +153,10 @@ export function ContactForm() {
           </div>
         </aside>
         <form
+          noValidate
           onSubmit={(e) => {
             e.preventDefault();
-            alert(tr(lang, "ct.f.sent"));
+            setSubmitError(tr(lang, "ct.f.unavailable"));
           }}
         >
           <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 20, marginBottom: 20 }}>
@@ -249,6 +251,22 @@ export function ContactForm() {
             />
           </Field>
           <input type="hidden" name="kind" value={kind} />
+          {submitError && (
+            <div
+              role="alert"
+              style={{
+                marginTop: 24,
+                padding: "14px 16px",
+                border: "1px solid var(--accent)",
+                borderRadius: "var(--r-1)",
+                background: "var(--accent-wash)",
+                color: "var(--shu-700)",
+                font: "500 14px/1.5 var(--font-sans)",
+              }}
+            >
+              {submitError}
+            </div>
+          )}
           <div style={{ marginTop: 32, paddingTop: 24, borderTop: "1px solid var(--hairline)", display: "flex", alignItems: "center", gap: 16 }}>
             <button
               type="submit"

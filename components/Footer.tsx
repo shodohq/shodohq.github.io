@@ -18,7 +18,6 @@ export function Footer() {
       items: [
         [tr(lang, "footer.poc"), "/contact"],
         [tr(lang, "footer.partners"), "/contact"],
-        ["contact@shodohq.com", "mailto:contact@shodohq.com"],
       ] as const,
     },
   ];
