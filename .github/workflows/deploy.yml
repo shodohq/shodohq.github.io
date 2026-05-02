@@ -34,6 +34,9 @@ jobs:
       - name: Build Next.js site
         run: npm run build
 
+      - name: Include custom domain configuration
+        run: cp CNAME out/CNAME
+
       - name: Upload static site artifact
         uses: actions/upload-pages-artifact@v3
         with:
