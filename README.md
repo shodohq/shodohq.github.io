@@ -2,6 +2,18 @@ This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-
 
 ## Getting Started
 
+### Nix devShell
+
+```bash
+nix develop
+npm ci
+npm run dev
+```
+
+The devShell provides Node.js, npm, Git, and local `node_modules/.bin` commands on `PATH`.
+
+## Next.js
+
 First, run the development server:
 
 ```bash
