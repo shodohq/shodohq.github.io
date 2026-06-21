@@ -3,7 +3,7 @@ import { tr, useLang } from "~/lib/i18n";
 export function ContactHero() {
   const { lang } = useLang();
   return (
-    <section className="border-hairline border-b px-12 pt-24 pb-18">
+    <section className="border-hairline border-b px-5 pt-12 pb-12 md:px-12 md:pt-24 md:pb-18">
       <div className="mx-auto max-w-[1240px]">
         <div className="text-fg-muted mb-7 flex items-center gap-2.5 font-mono text-[11px] tracking-[0.2em] uppercase">
           <span className="bg-ink-700 inline-block h-px w-6" />

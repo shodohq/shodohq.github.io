@@ -30,18 +30,18 @@ export function Platform() {
   ];
 
   return (
-    <section className="border-hairline bg-ink-900 text-washi border-b px-12 py-30">
+    <section className="border-hairline bg-ink-900 text-washi border-b px-5 py-16 md:px-12 md:py-30">
       <div className="mx-auto max-w-[1240px]">
         <div className="text-shu-300 mb-5.5 font-mono text-[11px] tracking-[0.22em] uppercase">
           {tr(lang, "home.platform.eyebrow")}
         </div>
-        <h2 className="font-display text-washi m-0 max-w-[820px] text-[44px] leading-[1.2] font-normal">
+        <h2 className="font-display text-washi m-0 max-w-[820px] text-[32px] leading-[1.2] font-normal md:text-[44px]">
           {tr(lang, "home.platform.h2")}
         </h2>
         <p className="text-ink-300 mt-5 max-w-[560px] font-sans text-[15px] leading-[1.7]">
           {tr(lang, "home.platform.quote")}
         </p>
-        <ol className="border-ink-600 m-0 mt-14 grid list-none grid-cols-1 gap-0 border-t p-0 md:grid-cols-4">
+        <ol className="border-ink-600 m-0 mt-10 grid list-none grid-cols-1 gap-0 border-t p-0 md:mt-14 md:grid-cols-4">
           {steps.map((s, i) => (
             <li
               key={s.n}

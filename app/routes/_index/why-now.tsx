@@ -27,7 +27,7 @@ export function WhyNow() {
   ];
 
   return (
-    <section className="border-hairline bg-bg-sunken border-b px-12 py-22">
+    <section className="border-hairline bg-bg-sunken border-b px-5 py-12 md:px-12 md:py-22">
       <div className="mx-auto max-w-[1240px]">
         <div className="mb-10 grid grid-cols-1 items-baseline gap-6 md:grid-cols-[320px_1fr] md:gap-20">
           <div className="text-fg-muted font-mono text-[11px] tracking-[0.18em] uppercase">

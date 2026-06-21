@@ -48,7 +48,7 @@ export function ContactForm() {
 
   if (submitted) {
     return (
-      <section className="border-hairline border-b px-12 py-20">
+      <section className="border-hairline border-b px-5 py-12 md:px-12 md:py-20">
         <div className="border-hairline bg-bg-sunken mx-auto max-w-[720px] border px-8 py-12 text-center">
           <div className="text-shu-300 mb-3 font-mono text-[11px] tracking-[0.2em] uppercase">
             {tr(lang, "contact.hero.eyebrow")}
@@ -62,8 +62,8 @@ export function ContactForm() {
   }
 
   return (
-    <section className="border-hairline border-b px-12 pt-20 pb-30">
-      <div className="mx-auto grid max-w-[1240px] grid-cols-1 gap-16 md:grid-cols-[320px_1fr]">
+    <section className="border-hairline border-b px-5 pt-16 pb-16 md:px-12 md:pt-20 md:pb-30">
+      <div className="mx-auto grid max-w-[1240px] grid-cols-1 gap-10 md:grid-cols-[320px_1fr] md:gap-16">
         <aside>
           <div className="text-fg-muted mb-4 font-mono text-[10px] tracking-[0.2em] uppercase">
             {tr(lang, "contact.form.kindLabel")}

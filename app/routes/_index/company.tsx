@@ -12,14 +12,14 @@ export function Company() {
   return (
     <section
       id="company"
-      className="border-hairline scroll-mt-6 border-b px-12 py-28"
+      className="border-hairline scroll-mt-6 border-b px-5 py-16 md:px-12 md:py-28"
     >
       <div className="mx-auto grid max-w-[1040px] grid-cols-1 items-center gap-12 md:grid-cols-[1fr_1.1fr] md:gap-20">
         <div>
           <div className="text-fg-muted mb-3.5 font-mono text-[11px] tracking-[0.2em] uppercase">
             {tr(lang, "home.company.eyebrow")}
           </div>
-          <h2 className="font-display text-fg m-0 max-w-[420px] text-[36px] leading-[1.25] font-normal">
+          <h2 className="font-display text-fg m-0 max-w-[420px] text-[26px] leading-[1.25] font-normal md:text-[36px]">
             {tr(lang, "home.company.h2")}
           </h2>
         </div>

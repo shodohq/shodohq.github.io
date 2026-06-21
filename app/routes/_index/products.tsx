@@ -30,15 +30,15 @@ export function Products() {
   return (
     <section
       id="products"
-      className="border-hairline scroll-mt-6 border-b px-12 py-30"
+      className="border-hairline scroll-mt-6 border-b px-5 py-16 md:px-12 md:py-30"
     >
       <div className="mx-auto max-w-[1240px]">
-        <div className="mb-14 grid grid-cols-1 gap-6 md:grid-cols-[320px_1fr] md:gap-20">
+        <div className="mb-10 grid grid-cols-1 gap-6 md:mb-14 md:grid-cols-[320px_1fr] md:gap-20">
           <div>
             <div className="text-fg-muted mb-3.5 font-mono text-[11px] tracking-[0.18em] uppercase">
               {tr(lang, "home.products.eyebrow")}
             </div>
-            <h2 className="font-display text-fg m-0 text-[40px] leading-[1.2] font-normal">
+            <h2 className="font-display text-fg m-0 text-[28px] leading-[1.2] font-normal md:text-[40px]">
               {l1}
               <br />
               {l2}

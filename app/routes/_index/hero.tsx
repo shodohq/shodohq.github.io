@@ -16,7 +16,7 @@ export function Hero() {
   const dot = tr(lang, "home.hero.h1dot");
 
   return (
-    <section className="border-hairline relative border-b px-12 pt-28 pb-22">
+    <section className="border-hairline relative border-b px-5 pt-16 pb-16 md:px-12 md:pt-28 md:pb-22">
       <div className="mx-auto grid max-w-[1240px] grid-cols-1 items-center gap-12 md:grid-cols-[1.1fr_1fr] md:gap-20">
         <div>
           <div className="text-fg-muted mb-7 flex items-center gap-2.5 font-mono text-[11px] tracking-[0.2em] uppercase">

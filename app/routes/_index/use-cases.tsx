@@ -10,12 +10,12 @@ export function UseCases() {
   ];
 
   return (
-    <section className="border-hairline bg-bg-sunken border-b px-12 py-30">
+    <section className="border-hairline bg-bg-sunken border-b px-5 py-16 md:px-12 md:py-30">
       <div className="mx-auto max-w-[1240px]">
         <div className="text-fg-muted mb-3.5 font-mono text-[11px] tracking-[0.2em] uppercase">
           {tr(lang, "home.useCases.eyebrow")}
         </div>
-        <h2 className="font-display text-fg m-0 mb-3 text-[40px] leading-[1.2] font-normal">
+        <h2 className="font-display text-fg m-0 mb-3 text-[28px] leading-[1.2] font-normal md:text-[40px]">
           {tr(lang, "home.useCases.h2")}
         </h2>
         <p className="text-ink-700 mt-3 max-w-[560px] font-sans text-[16px] leading-[1.7]">

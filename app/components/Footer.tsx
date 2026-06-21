@@ -26,7 +26,7 @@ export function Footer() {
   ];
 
   return (
-    <footer className="border-hairline bg-bg border-t px-12 pt-20 pb-9">
+    <footer className="border-hairline bg-bg border-t px-5 pt-12 pb-7 md:px-12 md:pt-20 md:pb-9">
       <div className="mx-auto grid max-w-[1240px] grid-cols-1 gap-12 md:grid-cols-[2fr_1fr_1.1fr]">
         <div>
           <div className="mb-5 flex items-center gap-3">

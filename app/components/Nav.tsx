@@ -6,7 +6,7 @@ export function Nav() {
   const { lang, setLang } = useLang();
 
   return (
-    <header className="border-hairline bg-bg/92 sticky top-0 z-50 flex h-[72px] items-stretch gap-8 border-b px-5 backdrop-blur-sm [@media(min-width:1101px)]:px-12">
+    <header className="border-hairline bg-bg/92 sticky top-0 z-50 flex h-14 items-stretch gap-8 border-b px-5 backdrop-blur-sm md:h-[72px] md:px-12">
       <Link
         to="/"
         className="flex items-center gap-3 no-underline"
