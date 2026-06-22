@@ -24,6 +24,9 @@ pnpm build   # .react-router/types/ + build/ を生成
 
 ## デプロイ (Cloudflare Workers)
 
+vars は `wrangler.jsonc` のトップレベルに直接配置 (env 階層なし)。
+`wrangler deploy` だけで `shodohq` worker に env vars が反映される。
+
 ### 初回セットアップ (本番)
 
 ```bash
@@ -32,14 +35,14 @@ npx wrangler secret put GOOGLE_SERVICE_ACCOUNT_KEY
 # 標準入力に GCP service account JSON 全体を貼り付け
 # (改行は \n エスケープのまま、コード側で \\n → \n に正規化)
 
-# 2. wrangler.jsonc の env.production.vars を本番用に編集
-#    - GOOGLE_SPREADSHEET_ID
-#    - GOOGLE_SHEET_RANGE
+# 2. wrangler.jsonc の vars を本番用に編集
+#    - GOOGLE_SPREADSHEET_ID を本番シート ID に置換
 
 # 3. 本番スプレッドシートに SA を編集者として招待
 
 # 4. デプロイ
-npx wrangler deploy --env production
+pnpm build
+npx wrangler deploy
 ```
 
 ### 新規開発者
