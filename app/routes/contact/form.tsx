@@ -97,6 +97,7 @@ export function ContactForm() {
     onSubmit: async ({ value }) => {
       const result = schema.safeParse(value);
       if (!result.success) return;
+      fetcher.reset();
       void fetcher.submit(buildFormData(result.data), { method: "post" });
     },
   });

@@ -55,7 +55,13 @@ export async function submitContactForm(
   ];
 
   try {
-    await deps.appendRow({ range, values: [row] });
+    const result = await deps.appendRow({ range, values: [row] });
+    if (result.updatedRows < 1) {
+      return {
+        ok: false,
+        error: `Sheets API returned 0 rows updated (no row was actually written): ${JSON.stringify(result)}`,
+      };
+    }
     return { ok: true };
   } catch (err) {
     const message = err instanceof Error ? err.message : String(err);

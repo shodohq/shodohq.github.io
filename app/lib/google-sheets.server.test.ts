@@ -56,7 +56,12 @@ describe("createGoogleSheetsClient", () => {
   });
 
   function build(
-    overrides: Partial<{ clientEmail: string; privateKey: string; scope: string }> = {},
+    overrides: Partial<{
+      clientEmail: string;
+      privateKey: string;
+      scope: string;
+      requestTimeoutMs: number;
+    }> = {},
   ) {
     return createGoogleSheetsClient(
       {
@@ -64,6 +69,7 @@ describe("createGoogleSheetsClient", () => {
         privateKey: overrides.privateKey ?? privatePem,
         spreadsheetId,
         scope: overrides.scope,
+        requestTimeoutMs: overrides.requestTimeoutMs,
       },
       { fetch: fetchMock as unknown as typeof fetch, now: () => nowMs },
     );
@@ -229,6 +235,45 @@ describe("createGoogleSheetsClient", () => {
 
       const client = build();
       await expect(client.appendRow({ range, values: [["a"]] })).rejects.toThrow(/internal/i);
+    });
+
+    it("throws when Sheets API returns 200 but updatedRows is 0", async () => {
+      fetchMock.mockResolvedValueOnce(tokenResponse());
+      fetchMock.mockResolvedValueOnce(appendResponse({ updatedRows: 0, updatedCells: 0 }));
+
+      const client = build();
+      await expect(client.appendRow({ range, values: [["a"]] })).rejects.toThrow(/0 row/i);
+    });
+
+    it("throws when Sheets API returns 200 but updates is missing", async () => {
+      fetchMock.mockResolvedValueOnce(tokenResponse());
+      fetchMock.mockResolvedValueOnce(okJson({ spreadsheetId }));
+
+      const client = build();
+      await expect(client.appendRow({ range, values: [["a"]] })).rejects.toThrow(/0 row/i);
+    });
+  });
+
+  describe("timeout", () => {
+    it("aborts the request and throws when fetch never resolves within the timeout", async () => {
+      const signalAborted = vi.fn();
+
+      fetchMock.mockImplementation((_url, init) => {
+        return new Promise<Response>((_, reject) => {
+          const signal = (init as RequestInit | undefined)?.signal;
+          if (!signal) return;
+          const onAbort = () => {
+            signalAborted();
+            reject(new DOMException("Aborted", "AbortError"));
+          };
+          signal.addEventListener("abort", onAbort);
+          if (signal.aborted) onAbort();
+        });
+      });
+
+      const client = build({ requestTimeoutMs: 50 });
+      await expect(client.appendRow({ range, values: [["a"]] })).rejects.toThrow(/timed out/i);
+      expect(signalAborted).toHaveBeenCalled();
     });
   });
 
