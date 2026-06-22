@@ -443,6 +443,24 @@ export const translations = {
         jp: "送信ありがとうございます。担当者よりご連絡いたします。",
         en: "Thanks for your message. We will be in touch.",
       },
+      errors: {
+        required: {
+          jp: "この項目は必須です。",
+          en: "This field is required.",
+        },
+        emailInvalid: {
+          jp: "有効なメールアドレスを入力してください。",
+          en: "Please enter a valid email address.",
+        },
+        privacyRequired: {
+          jp: "プライバシーポリシーへの同意が必要です。",
+          en: "You must agree to the privacy policy.",
+        },
+        submitFailed: {
+          jp: "送信に失敗しました。しばらく経ってから再度お試しください。",
+          en: "Submission failed. Please try again later.",
+        },
+      },
     },
   },
 } as const;

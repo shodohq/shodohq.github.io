@@ -11,7 +11,9 @@
     "lint": "oxlint",
     "lint:fix": "oxlint --fix",
     "fmt": "oxfmt",
-    "fmt:check": "oxfmt --check"
+    "fmt:check": "oxfmt --check",
+    "test": "vitest",
+    "test:run": "vitest run"
   },
   "dependencies": {
     "@react-router/fs-routes": "^8.0.1",

@@ -3,4 +3,13 @@
   "name": "shodohq-github-io",
   "compatibility_date": "2026-06-20",
   "main": "./workers/app.ts",
+  "env": {
+    "production": {
+      "vars": {
+        "GOOGLE_SHEETS_ENABLED": "true",
+        "GOOGLE_SPREADSHEET_ID": "PROD_SPREADSHEET_ID",
+        "GOOGLE_SHEET_RANGE": "Form!A:K",
+      },
+    },
+  },
 }

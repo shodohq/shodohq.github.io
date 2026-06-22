@@ -1,25 +1,40 @@
-import { useState } from "react";
+import { useForm } from "@tanstack/react-form";
+import { useMemo } from "react";
 import { useFetcher } from "react-router";
 
 import { tr, useLang } from "~/lib/i18n";
 
-const KINDS = ["kind1", "kind2", "kind3", "kind4", "kind5"] as const;
+import {
+  KIND_VALUES,
+  PRODUCT_VALUES,
+  TOPIC_VALUES,
+  makeContactFormSchema,
+  type ContactFormInput,
+} from "./contact.schema";
 
-const PRODUCTS = ["p1name", "p2name", "product3"] as const;
+const DEFAULT_VALUES: ContactFormInput = {
+  kind: "kind1",
+  product: "p1name",
+  topics: [],
+  name: "",
+  org: "",
+  role: "",
+  email: "",
+  message: "",
+  privacy: false,
+};
 
-const TOPICS = ["topic1", "topic2", "topic3", "topic4", "topic5", "topic6", "topic7"] as const;
-
-const SENSITIVE = ["sensitive1", "sensitive2", "sensitive3", "sensitive4", "sensitive5"] as const;
-
-function Field({
+function FieldLabel({
   label,
-  hint,
   required,
+  hint,
+  error,
   children,
 }: {
   label: string;
-  hint?: string;
   required?: boolean;
+  hint?: string;
+  error?: string;
   children: React.ReactNode;
 }) {
   return (
@@ -28,23 +43,63 @@ function Field({
         {label}
         {required && <span className="text-shu ml-1.5">*</span>}
       </label>
+      {hint && !error && <span className="text-fg-muted font-sans text-[12px]">{hint}</span>}
+      {error && (
+        <span
+          className="text-shu font-sans text-[12px]"
+          role="alert"
+        >
+          {error}
+        </span>
+      )}
       {children}
-      {hint && <span className="text-fg-muted font-sans text-[12px]">{hint}</span>}
+    </div>
+  );
+}
+
+function buildFormData(value: ContactFormInput): FormData {
+  const fd = new FormData();
+  fd.append("kind", value.kind);
+  fd.append("product", value.product);
+  fd.append("topics", value.topics.join(","));
+  fd.append("name", value.name);
+  fd.append("org", value.org);
+  fd.append("role", value.role);
+  fd.append("email", value.email);
+  fd.append("message", value.message);
+  if (value.privacy) fd.append("privacy", "on");
+  return fd;
+}
+
+function ErrorBanner({ message }: { message: string }) {
+  return (
+    <div
+      role="alert"
+      className="border-shu bg-accent-wash text-shu-700 mb-6 rounded-sm border px-4 py-3 font-sans text-[13px]"
+    >
+      {message}
     </div>
   );
 }
 
 export function ContactForm() {
   const { lang } = useLang();
-  const fetcher = useFetcher<{ ok: boolean }>();
-  const [kind, setKind] = useState<string>("kind1");
-  const [product, setProduct] = useState<string>("p1name");
-  const [topics, setTopics] = useState<Record<string, boolean>>({});
-
+  const fetcher = useFetcher<{ ok: boolean; error?: string }>();
   const submitted = fetcher.data?.ok === true;
   const submitting = fetcher.state !== "idle";
+  const submitError = fetcher.data && fetcher.data.ok === false ? fetcher.data.error : undefined;
 
-  const toggleTopic = (k: string) => setTopics((t) => ({ ...t, [k]: !t[k] }));
+  const schema = useMemo(() => makeContactFormSchema(lang), [lang]);
+
+  const form = useForm({
+    defaultValues: DEFAULT_VALUES as ContactFormInput,
+    validators: { onChange: schema },
+    onSubmit: async ({ value }) => {
+      const result = schema.safeParse(value);
+      if (!result.success) return;
+      void fetcher.submit(buildFormData(result.data), { method: "post" });
+    },
+  });
 
   if (submitted) {
     return (
@@ -53,7 +108,7 @@ export function ContactForm() {
           <div className="text-shu-300 mb-3 font-mono text-[11px] tracking-[0.2em] uppercase">
             {tr(lang, "contact.hero.eyebrow")}
           </div>
-          <h2 className="font-display text-fg m-0 text-[32px] leading-[1.2] font-normal">
+          <h2 className="font-display text-fg m-0 text-[28px] leading-[1.2] font-normal md:text-[32px]">
             {tr(lang, "contact.form.sent")}
           </h2>
         </div>
@@ -68,29 +123,39 @@ export function ContactForm() {
           <div className="text-fg-muted mb-4 font-mono text-[10px] tracking-[0.2em] uppercase">
             {tr(lang, "contact.form.kindLabel")}
           </div>
-          <div className="border-hairline flex flex-col border-t">
-            {KINDS.map((k) => (
-              <button
-                key={k}
-                type="button"
-                onClick={() => setKind(k)}
-                className={`border-hairline flex cursor-pointer items-center gap-3 border-0 border-b px-3 py-4 text-left font-sans text-[14px] font-medium ${
-                  kind === k ? "bg-bg-sunken text-fg" : "text-ink-700 bg-transparent"
-                }`}
-              >
-                <span
-                  className={`h-1.5 w-1.5 rounded-full ${kind === k ? "bg-shu" : "bg-ink-200"}`}
-                />
-                {tr(lang, `contact.form.${k}`)}
-              </button>
-            ))}
-          </div>
+          <form.Field
+            name="kind"
+            children={(field) => (
+              <div className="border-hairline flex flex-col border-t">
+                {KIND_VALUES.map((k) => {
+                  const active = field.state.value === k;
+                  return (
+                    <button
+                      key={k}
+                      type="button"
+                      onClick={() => field.handleChange(k)}
+                      className={`border-hairline flex cursor-pointer items-center gap-3 border-0 border-b px-3 py-4 text-left font-sans text-[14px] font-medium ${
+                        active ? "bg-bg-sunken text-fg" : "text-ink-700 bg-transparent"
+                      }`}
+                    >
+                      <span
+                        className={`h-1.5 w-1.5 rounded-full ${active ? "bg-shu" : "bg-ink-200"}`}
+                      />
+                      {tr(lang, `contact.form.${k}`)}
+                    </button>
+                  );
+                })}
+              </div>
+            )}
+          />
           <div className="border-line bg-bg-sunken mt-10 rounded-sm border p-5">
             <div className="text-fg-muted mb-3 font-mono text-[10px] leading-[1.5] tracking-[0.16em] uppercase">
               {tr(lang, "contact.form.sensitiveLabel")}
             </div>
             <ul className="m-0 flex list-none flex-col gap-1.5 p-0">
-              {SENSITIVE.map((s) => (
+              {(
+                ["sensitive1", "sensitive2", "sensitive3", "sensitive4", "sensitive5"] as const
+              ).map((s) => (
                 <li
                   key={s}
                   className="text-ink-700 flex gap-2 font-sans text-[12px] leading-[1.6]"
@@ -147,175 +212,278 @@ export function ContactForm() {
           </div>
         </aside>
 
-        <fetcher.Form method="post">
-          <input
-            type="hidden"
-            name="kind"
-            value={kind}
-          />
-          <input
-            type="hidden"
-            name="product"
-            value={product}
-          />
-          <input
-            type="hidden"
-            name="topics"
-            value={Object.entries(topics)
-              .filter(([, on]) => on)
-              .map(([k]) => k)
-              .join(",")}
-          />
+        <form
+          onSubmit={(e) => {
+            e.preventDefault();
+            e.stopPropagation();
+            void form.handleSubmit();
+          }}
+        >
+          {submitError && <ErrorBanner message={submitError} />}
+
           <div className="mb-5 grid grid-cols-1 gap-5 md:grid-cols-2">
-            <Field
-              label={tr(lang, "contact.form.labelName")}
-              required
-            >
-              <input
-                name="name"
-                required
-                placeholder={tr(lang, "contact.form.phName")}
-                className="border-line bg-paper-white text-fg h-10.5 w-full rounded-sm border px-3.5 font-sans text-[14px]"
-              />
-            </Field>
-            <Field
-              label={tr(lang, "contact.form.labelOrg")}
-              required
-            >
-              <input
-                name="org"
-                required
-                placeholder={tr(lang, "contact.form.phOrg")}
-                className="border-line bg-paper-white text-fg h-10.5 w-full rounded-sm border px-3.5 font-sans text-[14px]"
-              />
-            </Field>
-            <Field label={tr(lang, "contact.form.labelRole")}>
-              <input
-                name="role"
-                placeholder={tr(lang, "contact.form.phRole")}
-                className="border-line bg-paper-white text-fg h-10.5 w-full rounded-sm border px-3.5 font-sans text-[14px]"
-              />
-            </Field>
-            <Field
-              label={tr(lang, "contact.form.labelEmail")}
-              required
-            >
-              <input
-                type="email"
-                name="email"
-                required
-                placeholder={tr(lang, "contact.form.phEmail")}
-                className="border-line bg-paper-white text-fg h-10.5 w-full rounded-sm border px-3.5 font-sans text-[14px]"
-              />
-            </Field>
-          </div>
-          <Field
-            label={tr(lang, "contact.form.labelProduct")}
-            required
-          >
-            <div className="flex flex-wrap gap-2">
-              {PRODUCTS.map((p) => (
-                <button
-                  key={p}
-                  type="button"
-                  onClick={() => setProduct(p)}
-                  className={`cursor-pointer rounded-sm border px-3.5 py-2 font-sans text-[13px] font-medium ${
-                    product === p
-                      ? "border-ink-900 bg-ink-900 text-washi"
-                      : "border-line bg-surface text-fg"
-                  }`}
-                >
-                  {p === "p1name" || p === "p2name"
-                    ? tr(lang, `home.products.${p}`)
-                    : tr(lang, `contact.form.${p}`)}
-                </button>
-              ))}
-            </div>
-          </Field>
-          <Field
-            label={tr(lang, "contact.form.labelTopics")}
-            hint={tr(lang, "contact.form.topicsHint")}
-          >
-            <div className="flex flex-wrap gap-2">
-              {TOPICS.map((t) => {
-                const on = !!topics[t];
+            <form.Field
+              name="name"
+              children={(field) => {
+                const err = field.state.meta.errors[0]?.message;
                 return (
-                  <button
-                    key={t}
-                    type="button"
-                    onClick={() => toggleTopic(t)}
-                    className={`rounded-pill inline-flex cursor-pointer items-center gap-2 border px-3.5 py-2 font-sans text-[13px] font-medium ${
-                      on
-                        ? "border-shu bg-accent-wash text-shu-700"
-                        : "border-line bg-surface text-ink-700"
-                    }`}
+                  <FieldLabel
+                    label={tr(lang, "contact.form.labelName")}
+                    required
+                    error={err}
                   >
-                    <span className={`h-1.5 w-1.5 rounded-full ${on ? "bg-shu" : "bg-ink-200"}`} />
-                    {tr(lang, `contact.form.${t}`)}
-                  </button>
+                    <input
+                      name={field.name}
+                      required
+                      placeholder={tr(lang, "contact.form.phName")}
+                      value={field.state.value}
+                      onBlur={field.handleBlur}
+                      onChange={(e) => field.handleChange(e.target.value)}
+                      className="border-line bg-paper-white text-fg h-10.5 w-full rounded-sm border px-3.5 font-sans text-[14px]"
+                    />
+                  </FieldLabel>
                 );
-              })}
-            </div>
-          </Field>
-          <Field
-            label={tr(lang, "contact.form.labelMessage")}
-            required
-            hint={tr(lang, "contact.form.messageHint")}
-          >
-            <textarea
-              name="message"
-              required
-              rows={6}
-              placeholder={tr(lang, "contact.form.phMessage")}
-              className="border-line bg-paper-white text-fg w-full resize-y rounded-sm border px-3.5 py-3 font-sans text-[14px] leading-[1.6]"
+              }}
             />
-          </Field>
-          <label className="mt-2 flex cursor-pointer items-start gap-2.5">
-            <input
-              type="checkbox"
-              name="privacy"
-              required
-              className="accent-shu mt-0.75 h-3.75 w-3.75 shrink-0 cursor-pointer"
+            <form.Field
+              name="org"
+              children={(field) => {
+                const err = field.state.meta.errors[0]?.message;
+                return (
+                  <FieldLabel
+                    label={tr(lang, "contact.form.labelOrg")}
+                    required
+                    error={err}
+                  >
+                    <input
+                      name={field.name}
+                      required
+                      placeholder={tr(lang, "contact.form.phOrg")}
+                      value={field.state.value}
+                      onBlur={field.handleBlur}
+                      onChange={(e) => field.handleChange(e.target.value)}
+                      className="border-line bg-paper-white text-fg h-10.5 w-full rounded-sm border px-3.5 font-sans text-[14px]"
+                    />
+                  </FieldLabel>
+                );
+              }}
             />
-            <span className="text-ink-700 font-sans text-[13px] leading-[1.6]">
-              {lang === "jp" ? (
-                <>
-                  個人情報の取り扱いについて、{" "}
-                  <a
-                    href="#"
-                    className="text-fg underline"
-                  >
-                    {tr(lang, "contact.form.privacyLink")}
-                  </a>
-                  に同意します。
-                </>
-              ) : (
-                <>
-                  I agree to the handling of personal information in line with the{" "}
-                  <a
-                    href="#"
-                    className="text-fg underline"
-                  >
-                    {tr(lang, "contact.form.privacyLink")}
-                  </a>
-                  .
-                </>
+            <form.Field
+              name="role"
+              children={(field) => (
+                <FieldLabel label={tr(lang, "contact.form.labelRole")}>
+                  <input
+                    name={field.name}
+                    placeholder={tr(lang, "contact.form.phRole")}
+                    value={field.state.value}
+                    onBlur={field.handleBlur}
+                    onChange={(e) => field.handleChange(e.target.value)}
+                    className="border-line bg-paper-white text-fg h-10.5 w-full rounded-sm border px-3.5 font-sans text-[14px]"
+                  />
+                </FieldLabel>
               )}
-            </span>
-          </label>
+            />
+            <form.Field
+              name="email"
+              children={(field) => {
+                const err = field.state.meta.errors[0]?.message;
+                return (
+                  <FieldLabel
+                    label={tr(lang, "contact.form.labelEmail")}
+                    required
+                    error={err}
+                  >
+                    <input
+                      type="email"
+                      name={field.name}
+                      required
+                      placeholder={tr(lang, "contact.form.phEmail")}
+                      value={field.state.value}
+                      onBlur={field.handleBlur}
+                      onChange={(e) => field.handleChange(e.target.value)}
+                      className="border-line bg-paper-white text-fg h-10.5 w-full rounded-sm border px-3.5 font-sans text-[14px]"
+                    />
+                  </FieldLabel>
+                );
+              }}
+            />
+          </div>
+
+          <form.Field
+            name="product"
+            children={(field) => {
+              const err = field.state.meta.errors[0]?.message;
+              return (
+                <FieldLabel
+                  label={tr(lang, "contact.form.labelProduct")}
+                  required
+                  error={err}
+                >
+                  <div className="flex flex-wrap gap-2">
+                    {PRODUCT_VALUES.map((p) => {
+                      const active = field.state.value === p;
+                      return (
+                        <button
+                          key={p}
+                          type="button"
+                          onClick={() => field.handleChange(p)}
+                          className={`cursor-pointer rounded-sm border px-3.5 py-2 font-sans text-[13px] font-medium ${
+                            active
+                              ? "border-ink-900 bg-ink-900 text-washi"
+                              : "border-line bg-surface text-fg"
+                          }`}
+                        >
+                          {p === "p1name" || p === "p2name"
+                            ? tr(lang, `home.products.${p}`)
+                            : tr(lang, `contact.form.${p}`)}
+                        </button>
+                      );
+                    })}
+                  </div>
+                </FieldLabel>
+              );
+            }}
+          />
+
+          <form.Field
+            name="topics"
+            mode="array"
+            children={(field) => (
+              <FieldLabel
+                label={tr(lang, "contact.form.labelTopics")}
+                hint={tr(lang, "contact.form.topicsHint")}
+              >
+                <div className="flex flex-wrap gap-2">
+                  {TOPIC_VALUES.map((t) => {
+                    const on = field.state.value.includes(t);
+                    return (
+                      <button
+                        key={t}
+                        type="button"
+                        onClick={() => {
+                          if (on) {
+                            const i = field.state.value.indexOf(t);
+                            if (i >= 0) field.removeValue(i);
+                          } else {
+                            field.pushValue(t);
+                          }
+                        }}
+                        className={`rounded-pill inline-flex cursor-pointer items-center gap-2 border px-3.5 py-2 font-sans text-[13px] font-medium ${
+                          on
+                            ? "border-shu bg-accent-wash text-shu-700"
+                            : "border-line bg-surface text-ink-700"
+                        }`}
+                      >
+                        <span
+                          className={`h-1.5 w-1.5 rounded-full ${on ? "bg-shu" : "bg-ink-200"}`}
+                        />
+                        {tr(lang, `contact.form.${t}`)}
+                      </button>
+                    );
+                  })}
+                </div>
+              </FieldLabel>
+            )}
+          />
+
+          <form.Field
+            name="message"
+            children={(field) => {
+              const err = field.state.meta.errors[0]?.message;
+              return (
+                <FieldLabel
+                  label={tr(lang, "contact.form.labelMessage")}
+                  required
+                  hint={!err ? tr(lang, "contact.form.messageHint") : undefined}
+                  error={err}
+                >
+                  <textarea
+                    name={field.name}
+                    required
+                    rows={6}
+                    placeholder={tr(lang, "contact.form.phMessage")}
+                    value={field.state.value}
+                    onBlur={field.handleBlur}
+                    onChange={(e) => field.handleChange(e.target.value)}
+                    className="border-line bg-paper-white text-fg w-full resize-y rounded-sm border px-3.5 py-3 font-sans text-[14px] leading-[1.6]"
+                  />
+                </FieldLabel>
+              );
+            }}
+          />
+
+          <form.Field
+            name="privacy"
+            children={(field) => {
+              const err = field.state.meta.errors[0]?.message;
+              return (
+                <div className="mt-2 flex flex-col gap-1.5">
+                  <label className="flex cursor-pointer items-start gap-2.5">
+                    <input
+                      type="checkbox"
+                      name={field.name}
+                      checked={field.state.value}
+                      onBlur={field.handleBlur}
+                      onChange={(e) => field.handleChange(e.target.checked)}
+                      className="accent-shu mt-0.75 h-3.75 w-3.75 shrink-0 cursor-pointer"
+                    />
+                    <span className="text-ink-700 font-sans text-[13px] leading-[1.6]">
+                      {lang === "jp" ? (
+                        <>
+                          個人情報の取り扱いについて、{" "}
+                          <a
+                            href="#"
+                            className="text-fg underline"
+                          >
+                            {tr(lang, "contact.form.privacyLink")}
+                          </a>
+                          に同意します。
+                        </>
+                      ) : (
+                        <>
+                          I agree to the handling of personal information in line with the{" "}
+                          <a
+                            href="#"
+                            className="text-fg underline"
+                          >
+                            {tr(lang, "contact.form.privacyLink")}
+                          </a>
+                          .
+                        </>
+                      )}
+                    </span>
+                  </label>
+                  {err && (
+                    <span
+                      className="text-shu pl-6 font-sans text-[12px]"
+                      role="alert"
+                    >
+                      {err}
+                    </span>
+                  )}
+                </div>
+              );
+            }}
+          />
+
           <div className="border-hairline mt-7 flex flex-wrap items-center gap-4 border-t pt-6">
-            <button
-              type="submit"
-              disabled={submitting}
-              className="bg-accent text-fg-on-accent inline-flex h-12 cursor-pointer items-center rounded-sm px-7 font-sans text-[14px] tracking-[0.02em] disabled:opacity-60"
-            >
-              {tr(lang, "contact.form.submit")}
-            </button>
+            <form.Subscribe
+              selector={(s) => [s.canSubmit, s.isSubmitting] as const}
+              children={([canSubmit, isFormSubmitting]) => (
+                <button
+                  type="submit"
+                  disabled={!canSubmit || submitting || isFormSubmitting}
+                  className="bg-accent text-fg-on-accent inline-flex h-12 cursor-pointer items-center rounded-sm px-7 font-sans text-[14px] tracking-[0.02em] disabled:opacity-60"
+                >
+                  {tr(lang, "contact.form.submit")}
+                </button>
+              )}
+            />
             <span className="text-fg-muted font-sans text-[12px]">
               {tr(lang, "contact.form.afterSubmit")}
             </span>
           </div>
-        </fetcher.Form>
+        </form>
       </div>
     </section>
   );
