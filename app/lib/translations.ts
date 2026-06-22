@@ -23,12 +23,9 @@ export const translations = {
     companyCol: { jp: "Company", en: "Company" },
     contactCol: { jp: "Contact", en: "Contact" },
     companyInfo: { jp: "会社情報", en: "About" },
-    news: { jp: "News · 報道", en: "News · Press" },
-    careers: { jp: "Careers", en: "Careers" },
-    poc: { jp: "PoC相談", en: "PoC inquiry" },
-    partners: { jp: "Partners", en: "Partners" },
+    inquiry: { jp: "お問い合わせ", en: "Contact" },
+    email: { jp: "info@shodohq.com", en: "info@shodohq.com" },
     copy: { jp: "© 2026 株式会社衝動 · Shodo Inc.", en: "© 2026 Shodo Inc." },
-    legal: { jp: "Privacy · Terms · Trust", en: "Privacy · Terms · Trust" },
   },
   home: {
     hero: {
