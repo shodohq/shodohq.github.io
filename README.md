@@ -1,87 +1,62 @@
-# Welcome to React Router!
+# Shodo HQ コーポレートサイト
 
-A modern, production-ready template for building full-stack React applications using React Router.
+React Router 8 (SSR) + Cloudflare Workers + Tailwind v4 で構築された Shodo HQ のコーポレートサイト。規約・判断は [AGENTS.md](./AGENTS.md) を参照。
 
-[![Open in StackBlitz](https://developer.stackblitz.com/img/open_in_stackblitz.svg)](https://stackblitz.com/github/remix-run/react-router-templates/tree/main/default)
-
-## Features
-
-- 🚀 Server-side rendering
-- ⚡️ Hot Module Replacement (HMR)
-- 📦 Asset bundling and optimization
-- 🔄 Data loading and mutations
-- 🔒 TypeScript by default
-- 🎉 TailwindCSS for styling
-- 📖 [React Router docs](https://reactrouter.com/)
-
-## Getting Started
-
-### Installation
-
-Install the dependencies:
+## 開発
 
 ```bash
-npm install
+pnpm install
+pnpm dev   # http://localhost:5173
 ```
 
-### Development
-
-Start the development server with HMR:
+## テスト
 
 ```bash
-npm run dev
+pnpm test:run   # 1 回実行 (CI 用)
+pnpm test       # watch モード
 ```
 
-Your application will be available at `http://localhost:5173`.
-
-## Building for Production
-
-Create a production build:
+## ビルド
 
 ```bash
-npm run build
+pnpm build   # .react-router/types/ + build/ を生成
 ```
 
-## Deployment
+## デプロイ (Cloudflare Workers)
 
-### Docker Deployment
-
-To build and run using Docker:
+### 初回セットアップ (本番)
 
 ```bash
-docker build -t my-app .
+# 1. SA key を secret として登録
+npx wrangler secret put GOOGLE_SERVICE_ACCOUNT_KEY
+# 標準入力に GCP service account JSON 全体を貼り付け
+# (改行は \n エスケープのまま、コード側で \\n → \n に正規化)
 
-# Run the container
-docker run -p 3000:3000 my-app
+# 2. wrangler.jsonc の env.production.vars を本番用に編集
+#    - GOOGLE_SPREADSHEET_ID
+#    - GOOGLE_SHEET_RANGE
+
+# 3. 本番スプレッドシートに SA を編集者として招待
+
+# 4. デプロイ
+npx wrangler deploy --env production
 ```
 
-The containerized application can be deployed to any platform that supports Docker, including:
+### 新規開発者
 
-- AWS ECS
-- Google Cloud Run
-- Azure Container Apps
-- Digital Ocean App Platform
-- Fly.io
-- Railway
+```bash
+# 1. テンプレートをコピー
+cp .dev.vars.example .dev.vars
 
-### DIY Deployment
+# 2. .dev.vars を編集 (自分のスプレッドシート ID と SA key)
+#    - スプレッドシート作成 → SA に編集権限付与 → JSON 取得
 
-If you're familiar with deploying Node applications, the built-in app server is production-ready.
-
-Make sure to deploy the output of `npm run build`
-
-```
-├── package.json
-├── package-lock.json (or pnpm-lock.yaml, or bun.lockb)
-├── build/
-│   ├── client/    # Static assets
-│   └── server/    # Server-side code
+# 3. 開発サーバ起動
+pnpm dev
 ```
 
-## Styling
+## リンク
 
-This template comes with [Tailwind CSS](https://tailwindcss.com/) already configured for a simple default starting experience. You can use whatever CSS framework you prefer.
-
----
-
-Built with ❤️ using React Router.
+- [React Router 8](https://reactrouter.com/)
+- [Tailwind CSS v4](https://tailwindcss.com/docs)
+- [Cloudflare Workers](https://developers.cloudflare.com/workers/)
