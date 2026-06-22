@@ -208,5 +208,23 @@ describe("submitContactForm", () => {
       });
       expect(result).toEqual({ ok: false, error: "weird failure" });
     });
+
+    it("returns ok=false when appendRow returns 0 updatedRows (no row actually written)", async () => {
+      const appendRowMock = createMockAppendRow();
+      appendRowMock.mockResolvedValue({
+        spreadsheetId: "sheet-1",
+        updatedRows: 0,
+        updatedColumns: 0,
+        updatedCells: 0,
+      });
+      const result = await submitContactForm(validInput, {
+        appendRow: appendRowMock as unknown as AppendRowFn,
+        lang: "jp",
+      });
+      expect(result.ok).toBe(false);
+      if (result.ok === false) {
+        expect(result.error).toMatch(/0 row/);
+      }
+    });
   });
 });

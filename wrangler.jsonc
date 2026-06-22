@@ -6,6 +6,7 @@
   "env": {
     "production": {
       "vars": {
+        "ENVIRONMENT": "production",
         "GOOGLE_SHEETS_ENABLED": "true",
         "GOOGLE_SPREADSHEET_ID": "PROD_SPREADSHEET_ID",
         "GOOGLE_SHEET_RANGE": "Form!A:K",

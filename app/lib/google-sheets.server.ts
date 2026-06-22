@@ -5,12 +5,14 @@ const DEFAULT_SCOPE = "https://www.googleapis.com/auth/spreadsheets";
 const TOKEN_EXPIRY_SECONDS = 3600;
 const TOKEN_REFRESH_MARGIN_SECONDS = 60;
 const USER_AGENT = "shodohq-contact-form/1.0 (Google Sheets)";
+const REQUEST_TIMEOUT_MS = 25_000;
 
 export type GoogleSheetsConfig = {
   clientEmail: string;
   privateKey: string;
   spreadsheetId: string;
   scope?: string;
+  requestTimeoutMs?: number;
 };
 
 export type GoogleSheetsDeps = {
@@ -65,6 +67,7 @@ export function createGoogleSheetsClient(
   const fetchImpl = deps.fetch ?? fetch;
   const now = deps.now ?? (() => Date.now());
   const scope = config.scope ?? DEFAULT_SCOPE;
+  const requestTimeoutMs = config.requestTimeoutMs ?? REQUEST_TIMEOUT_MS;
   const keyPromise = importPKCS8(normalizePrivateKey(config.privateKey), "RS256");
   let cache: TokenCache | null = null;
 
@@ -83,14 +86,19 @@ export function createGoogleSheetsClient(
       .setExpirationTime(nowSec + TOKEN_EXPIRY_SECONDS)
       .sign(key);
 
-    const res = await fetchImpl(TOKEN_URL, {
-      method: "POST",
-      headers: { "content-type": "application/x-www-form-urlencoded" },
-      body: new URLSearchParams({
-        grant_type: "urn:ietf:params:oauth:grant-type:jwt-bearer",
-        assertion: jwt,
-      }).toString(),
-    });
+    const res = await fetchWithTimeout(
+      fetchImpl,
+      TOKEN_URL,
+      {
+        method: "POST",
+        headers: { "content-type": "application/x-www-form-urlencoded" },
+        body: new URLSearchParams({
+          grant_type: "urn:ietf:params:oauth:grant-type:jwt-bearer",
+          assertion: jwt,
+        }).toString(),
+      },
+      requestTimeoutMs,
+    );
 
     if (!res.ok) {
       const body = await res.json().catch(() => ({}));
@@ -113,15 +121,20 @@ export function createGoogleSheetsClient(
         range,
       )}:append?valueInputOption=USER_ENTERED`;
 
-      const res = await fetchImpl(url, {
-        method: "POST",
-        headers: {
-          Authorization: `Bearer ${accessToken}`,
-          "content-type": "application/json",
-          "user-agent": USER_AGENT,
+      const res = await fetchWithTimeout(
+        fetchImpl,
+        url,
+        {
+          method: "POST",
+          headers: {
+            Authorization: `Bearer ${accessToken}`,
+            "content-type": "application/json",
+            "user-agent": USER_AGENT,
+          },
+          body: JSON.stringify({ range, majorDimension: "ROWS", values }),
         },
-        body: JSON.stringify({ range, majorDimension: "ROWS", values }),
-      });
+        requestTimeoutMs,
+      );
 
       if (!res.ok) {
         const body = await res.json().catch(() => ({}));
@@ -138,13 +151,40 @@ export function createGoogleSheetsClient(
         };
       };
 
+      const updatedRows = data.updates?.updatedRows ?? 0;
+      if (updatedRows < 1) {
+        throw new Error(
+          `Sheets API returned 0 rows updated (no row was actually written): ${JSON.stringify(data)}`,
+        );
+      }
+
       return {
         spreadsheetId: data.spreadsheetId ?? config.spreadsheetId,
         updatedRange: data.updates?.updatedRange,
-        updatedRows: data.updates?.updatedRows ?? 0,
+        updatedRows,
         updatedColumns: data.updates?.updatedColumns ?? 0,
         updatedCells: data.updates?.updatedCells ?? 0,
       };
     },
   };
+}
+
+async function fetchWithTimeout(
+  fetchImpl: typeof fetch,
+  url: string,
+  init: RequestInit,
+  timeoutMs: number,
+): Promise<Response> {
+  const controller = new AbortController();
+  const timeoutId = setTimeout(() => controller.abort(), timeoutMs);
+  try {
+    return await fetchImpl(url, { ...init, signal: controller.signal });
+  } catch (err) {
+    if (err instanceof DOMException && err.name === "AbortError") {
+      throw new Error(`Request to ${url} timed out after ${timeoutMs}ms`);
+    }
+    throw err;
+  } finally {
+    clearTimeout(timeoutId);
+  }
 }

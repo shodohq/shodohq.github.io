@@ -440,6 +440,20 @@ export const translations = {
         jp: "送信ありがとうございます。担当者よりご連絡いたします。",
         en: "Thanks for your message. We will be in touch.",
       },
+      errorBoundary: {
+        title: {
+          jp: "送信に失敗しました",
+          en: "Submission failed",
+        },
+        body: {
+          jp: "通信中に問題が発生しました。ネットワーク接続をご確認のうえ、再度お試しください。お手数ですが、フォームの入力内容もご再入力ください。",
+          en: "A problem occurred while sending. Please check your network connection and try again. We apologize for the inconvenience — please re-enter the form contents.",
+        },
+        retry: {
+          jp: "フォームに戻る",
+          en: "Back to the form",
+        },
+      },
       errors: {
         required: {
           jp: "この項目は必須です。",
