@@ -9,18 +9,13 @@ export function Footer() {
   const cols: { title: string; items: [string, string][] }[] = [
     {
       title: tr(lang, "footer.companyCol"),
-      items: [
-        [tr(lang, "footer.companyInfo"), "/#company"],
-        [tr(lang, "footer.news"), "#"],
-        [tr(lang, "footer.careers"), "#"],
-      ],
+      items: [[tr(lang, "footer.companyInfo"), "/#company"]],
     },
     {
       title: tr(lang, "footer.contactCol"),
       items: [
-        [tr(lang, "footer.poc"), "/contact"],
-        [tr(lang, "footer.partners"), "/contact"],
-        ["contact@shodohq.com", "mailto:contact@shodohq.com"],
+        [tr(lang, "footer.inquiry"), "/contact"],
+        [tr(lang, "footer.email"), "mailto:info@shodohq.com"],
       ],
     },
   ];
@@ -83,9 +78,8 @@ export function Footer() {
           </div>
         ))}
       </div>
-      <div className="border-hairline text-fg-muted mx-auto mt-14 flex max-w-[1240px] flex-col gap-2 border-t pt-5 font-mono text-[11px] tracking-[0.1em] uppercase md:flex-row md:justify-between">
+      <div className="border-hairline text-fg-muted mx-auto mt-14 flex max-w-[1240px] border-t pt-5 font-mono text-[11px] tracking-[0.1em] uppercase">
         <span>{tr(lang, "footer.copy")}</span>
-        <span>{tr(lang, "footer.legal")}</span>
       </div>
     </footer>
   );
