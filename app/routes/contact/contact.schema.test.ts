@@ -13,7 +13,6 @@ const validInput = {
   role: "情報セキュリティ 部長",
   email: "taro@example.com",
   message: "PoCについて相談したいです。",
-  privacy: true,
 };
 
 describe("contactFormSchema", () => {
@@ -94,19 +93,6 @@ describe("contactFormSchema", () => {
     });
   });
 
-  describe("privacy", () => {
-    it("rejects when privacy is missing", () => {
-      const { privacy: _privacy, ...rest } = validInput;
-      const result = contactFormSchema.safeParse(rest);
-      expect(result.success).toBe(false);
-    });
-
-    it("rejects when privacy is false", () => {
-      const result = contactFormSchema.safeParse({ ...validInput, privacy: false });
-      expect(result.success).toBe(false);
-    });
-  });
-
   describe("enum validation", () => {
     it("rejects unknown kind", () => {
       const result = contactFormSchema.safeParse({ ...validInput, kind: "kindX" });
@@ -156,17 +142,6 @@ describe("contactFormSchema", () => {
         const jpEmail = jp.error.issues.find((i) => i.path[0] === "email");
         expect(enEmail?.message).toBe("Please enter a valid email address.");
         expect(jpEmail?.message).toBe("有効なメールアドレスを入力してください。");
-      }
-    });
-
-    it("privacy error is translated", () => {
-      const en = makeContactFormSchema("en").safeParse({ ...validInput, privacy: false });
-      const jp = makeContactFormSchema("jp").safeParse({ ...validInput, privacy: false });
-      if (!en.success && !jp.success) {
-        const enPrivacy = en.error.issues.find((i) => i.path[0] === "privacy");
-        const jpPrivacy = jp.error.issues.find((i) => i.path[0] === "privacy");
-        expect(enPrivacy?.message).toBe("You must agree to the privacy policy.");
-        expect(jpPrivacy?.message).toBe("プライバシーポリシーへの同意が必要です。");
       }
     });
   });

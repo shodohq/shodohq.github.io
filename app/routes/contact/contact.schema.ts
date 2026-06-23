@@ -27,7 +27,6 @@ export type ContactFormInput = {
   role: string;
   email: string;
   message: string;
-  privacy: boolean;
 };
 
 const REQUIRED = {
@@ -37,10 +36,6 @@ const REQUIRED = {
 const EMAIL_INVALID = {
   jp: "有効なメールアドレスを入力してください。",
   en: "Please enter a valid email address.",
-} as const;
-const PRIVACY_REQUIRED = {
-  jp: "プライバシーポリシーへの同意が必要です。",
-  en: "You must agree to the privacy policy.",
 } as const;
 
 export function makeContactFormSchema(lang: "jp" | "en") {
@@ -53,6 +48,5 @@ export function makeContactFormSchema(lang: "jp" | "en") {
     role: z.string(),
     email: z.email(EMAIL_INVALID[lang]),
     message: z.string().min(1, REQUIRED[lang]),
-    privacy: z.boolean().refine((v) => v === true, { message: PRIVACY_REQUIRED[lang] }),
   });
 }
