@@ -46,7 +46,6 @@ const validForm: Record<string, string> = {
   role: "情報セキュリティ 部長",
   email: "taro@example.com",
   message: "PoCについて相談したいです。",
-  privacy: "on",
 };
 
 async function makeKeyPairPem() {
@@ -70,7 +69,7 @@ describe("contact action", () => {
       private_key: privatePem,
     });
     envState.GOOGLE_SPREADSHEET_ID = "sheet-1";
-    envState.GOOGLE_SHEET_RANGE = "Form!A:K";
+    envState.GOOGLE_SHEET_RANGE = "Form!A:J";
     delete envState.ENVIRONMENT;
     mockedCreateClient.mockReset();
     consoleErrorSpy = vi.spyOn(console, "error").mockImplementation(() => {});
@@ -88,9 +87,9 @@ describe("contact action", () => {
         appendRow: vi.fn().mockResolvedValue({
           spreadsheetId: "sheet-1",
           updatedRows: 1,
-          updatedColumns: 11,
-          updatedCells: 11,
-          updatedRange: "Form!A2:K2",
+          updatedColumns: 10,
+          updatedCells: 10,
+          updatedRange: "Form!A2:J2",
         }),
       });
 
@@ -227,21 +226,6 @@ describe("contact action", () => {
   });
 
   describe("validation", () => {
-    it("returns { ok: false, error: required } when privacy is missing", async () => {
-      const form = { ...validForm };
-      delete form.privacy;
-
-      const result = await action({
-        request: buildRequest(form),
-      } as Parameters<typeof action>[0]);
-
-      expect(result).toEqual({
-        ok: false,
-        error: expect.stringMatching(/必須|required/i),
-      });
-      expect(mockedCreateClient).not.toHaveBeenCalled();
-    });
-
     it("returns { ok: false, error: required } when email is invalid", async () => {
       const result = await action({
         request: buildRequest({ ...validForm, email: "not-an-email" }),

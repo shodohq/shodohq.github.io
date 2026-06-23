@@ -21,7 +21,6 @@ const DEFAULT_VALUES: ContactFormInput = {
   role: "",
   email: "",
   message: "",
-  privacy: false,
 };
 
 function FieldLabel({
@@ -67,7 +66,6 @@ function buildFormData(value: ContactFormInput): FormData {
   fd.append("role", value.role);
   fd.append("email", value.email);
   fd.append("message", value.message);
-  if (value.privacy) fd.append("privacy", "on");
   return fd;
 }
 
@@ -409,60 +407,6 @@ export function ContactForm() {
                     className="border-line bg-paper-white text-fg w-full resize-y rounded-sm border px-3.5 py-3 font-sans text-[14px] leading-[1.6]"
                   />
                 </FieldLabel>
-              );
-            }}
-          />
-
-          <form.Field
-            name="privacy"
-            children={(field) => {
-              const err = field.state.meta.errors[0]?.message;
-              return (
-                <div className="mt-2 flex flex-col gap-1.5">
-                  <label className="flex cursor-pointer items-start gap-2.5">
-                    <input
-                      type="checkbox"
-                      name={field.name}
-                      checked={field.state.value}
-                      onBlur={field.handleBlur}
-                      onChange={(e) => field.handleChange(e.target.checked)}
-                      className="accent-shu mt-0.75 h-3.75 w-3.75 shrink-0 cursor-pointer"
-                    />
-                    <span className="text-ink-700 font-sans text-[13px] leading-[1.6]">
-                      {lang === "jp" ? (
-                        <>
-                          個人情報の取り扱いについて、{" "}
-                          <a
-                            href="#"
-                            className="text-fg underline"
-                          >
-                            {tr(lang, "contact.form.privacyLink")}
-                          </a>
-                          に同意します。
-                        </>
-                      ) : (
-                        <>
-                          I agree to the handling of personal information in line with the{" "}
-                          <a
-                            href="#"
-                            className="text-fg underline"
-                          >
-                            {tr(lang, "contact.form.privacyLink")}
-                          </a>
-                          .
-                        </>
-                      )}
-                    </span>
-                  </label>
-                  {err && (
-                    <span
-                      className="text-shu pl-6 font-sans text-[12px]"
-                      role="alert"
-                    >
-                      {err}
-                    </span>
-                  )}
-                </div>
               );
             }}
           />

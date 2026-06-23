@@ -59,7 +59,6 @@ const validInput: ContactFormInput = {
   role: "情報セキュリティ 部長",
   email: "taro@example.com",
   message: "PoCについて相談したいです。",
-  privacy: true,
 };
 
 const fixedIsoNow = "2024-06-15T10:30:00.000Z";
@@ -73,9 +72,9 @@ function createMockAppendRow(): MockAppendRow {
 const defaultAppendResult: AppendRowResult = {
   spreadsheetId: "sheet-1",
   updatedRows: 1,
-  updatedColumns: 11,
-  updatedCells: 11,
-  updatedRange: "Form!A2:K2",
+  updatedColumns: 10,
+  updatedCells: 10,
+  updatedRange: "Form!A2:J2",
 };
 
 describe("submitContactForm", () => {
@@ -103,7 +102,7 @@ describe("submitContactForm", () => {
       expect(appendRowMock.mock.calls).toHaveLength(1);
 
       const callArg = appendRowMock.mock.calls[0]![0];
-      expect(callArg.range).toBe("Form!A:K");
+      expect(callArg.range).toBe("Form!A:J");
       expect(callArg.values).toHaveLength(1);
 
       const row = callArg.values[0]!;
@@ -117,7 +116,6 @@ describe("submitContactForm", () => {
       expect(row[7]).toBe("Pixie Defense Suite");
       expect(row[8]).toBe("重要業務停止リスクを把握したい / インシデント時の業務影響を整理したい");
       expect(row[9]).toBe("PoCについて相談したいです。");
-      expect(row[10]).toBe("agreed");
     });
 
     it("translates to English when lang=en", async () => {
@@ -178,13 +176,13 @@ describe("submitContactForm", () => {
   });
 
   describe("row column order", () => {
-    it("emits columns in the documented order [timestamp, lang, kind, name, org, role, email, product, topics, message, privacy]", async () => {
+    it("emits columns in the documented order [timestamp, lang, kind, name, org, role, email, product, topics, message]", async () => {
       const { deps, appendRowMock } = setup();
       await submitContactForm(validInput, deps);
       const row = appendRowMock.mock.calls[0]![0].values[0]!;
-      expect(row).toHaveLength(11);
+      expect(row).toHaveLength(10);
       expect(row[0]).toBe(fixedIsoNow);
-      expect(row[10]).toBe("agreed");
+      expect(row[9]).toBe(validInput.message);
     });
   });
 

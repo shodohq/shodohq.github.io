@@ -8,7 +8,7 @@ import type { Lang } from "~/lib/translations";
 
 import type { Route } from "./+types/route";
 import { makeContactFormSchema } from "./contact.schema";
-import { submitContactForm } from "./contact.server";
+import { SHEET_RANGE, submitContactForm } from "./contact.server";
 import { ContactForm } from "./form";
 import { ContactHero } from "./hero";
 
@@ -45,7 +45,6 @@ function parseFormData(formData: FormData) {
     role: formData.get("role") ?? "",
     email: formData.get("email") ?? "",
     message: formData.get("message") ?? "",
-    privacy: formData.get("privacy") === "on",
   };
 }
 
@@ -80,7 +79,7 @@ export async function action({ request }: Route.ActionArgs) {
 
     const rawKey = env.GOOGLE_SERVICE_ACCOUNT_KEY;
     const spreadsheetId = env.GOOGLE_SPREADSHEET_ID;
-    const range = env.GOOGLE_SHEET_RANGE ?? "Form!A:K";
+    const range = env.GOOGLE_SHEET_RANGE ?? SHEET_RANGE;
     if (!rawKey || !spreadsheetId) {
       console.error("[contact] Missing GOOGLE_SERVICE_ACCOUNT_KEY or GOOGLE_SPREADSHEET_ID");
       return {

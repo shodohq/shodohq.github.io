@@ -3,7 +3,7 @@ import { tr } from "~/lib/i18n";
 
 import type { ContactFormInput } from "./contact.schema";
 
-const SHEET_RANGE = "Form!A:K";
+export const SHEET_RANGE = "Form!A:J";
 
 export type SubmitDeps = {
   appendRow: AppendRowFn;
@@ -51,7 +51,6 @@ export async function submitContactForm(
     translateProduct(lang, input.product),
     translateTopics(lang, input.topics),
     input.message,
-    "agreed",
   ];
 
   try {

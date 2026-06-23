@@ -423,18 +423,10 @@ export const translations = {
         jp: "現在の課題、関心のある製品、PoCで確認したいこと、技術的に相談したい点などをご記入ください。初回のお問い合わせでは、機微情報の記載は不要です。",
         en: "Tell us your current challenges, the products you are interested in, what you want to verify in a PoC, or any technical points you would like to discuss. For a first inquiry, no sensitive information is needed.",
       },
-      privacy: {
-        jp: "個人情報の取り扱いについて、プライバシーポリシーに同意します。",
-        en: "I agree to the handling of personal information in line with the Privacy Policy.",
-      },
-      privacyLink: {
-        jp: "プライバシーポリシー",
-        en: "Privacy Policy",
-      },
       submit: { jp: "送信する", en: "Send" },
       afterSubmit: {
-        jp: "お預かりした情報は当社のプライバシーポリシーに基づき取り扱います。",
-        en: "Submissions are handled in line with our Privacy Policy.",
+        jp: "ご記入の内容はお問い合わせ対応のみに使用し、第三者に提供することはありません。",
+        en: "The information you provide will be used solely to respond to your inquiry and will not be shared with third parties.",
       },
       sent: {
         jp: "送信ありがとうございます。担当者よりご連絡いたします。",
@@ -462,10 +454,6 @@ export const translations = {
         emailInvalid: {
           jp: "有効なメールアドレスを入力してください。",
           en: "Please enter a valid email address.",
-        },
-        privacyRequired: {
-          jp: "プライバシーポリシーへの同意が必要です。",
-          en: "You must agree to the privacy policy.",
         },
         submitFailed: {
           jp: "送信に失敗しました。しばらく経ってから再度お試しください。",
