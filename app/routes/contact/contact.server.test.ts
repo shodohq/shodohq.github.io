@@ -14,8 +14,8 @@ vi.mock("~/lib/i18n", () => ({
       "contact.form.kind3": { jp: "導入について相談したい", en: "Talk about adoption" },
       "contact.form.kind4": { jp: "技術的な質問をしたい", en: "Ask a technical question" },
       "contact.form.kind5": { jp: "パートナー・協業・その他", en: "Partnership / other" },
-      "home.products.p1name": { jp: "Pixie Defense Suite", en: "Pixie Defense Suite" },
-      "home.products.p2name": { jp: "Pixie Shield", en: "Pixie Shield" },
+      "home.products.p1name": { jp: "Pixie for Operations", en: "Pixie for Operations" },
+      "home.products.p2name": { jp: "Pixie for Code", en: "Pixie for Code" },
       "contact.form.product3": {
         jp: "まだ決まっていない / 相談しながら整理したい",
         en: "Not decided / figure out through consultation",
@@ -113,7 +113,7 @@ describe("submitContactForm", () => {
       expect(row[4]).toBe("株式会社サンプル");
       expect(row[5]).toBe("情報セキュリティ 部長");
       expect(row[6]).toBe("taro@example.com");
-      expect(row[7]).toBe("Pixie Defense Suite");
+      expect(row[7]).toBe("Pixie for Operations");
       expect(row[8]).toBe("重要業務停止リスクを把握したい / インシデント時の業務影響を整理したい");
       expect(row[9]).toBe("PoCについて相談したいです。");
     });
@@ -126,7 +126,7 @@ describe("submitContactForm", () => {
       const row = appendRowMock.mock.calls[0]![0].values[0]!;
       expect(row[1]).toBe("en");
       expect(row[2]).toBe("Request a product demo");
-      expect(row[7]).toBe("Pixie Defense Suite");
+      expect(row[7]).toBe("Pixie for Operations");
       expect(row[8]).toBe(
         "Understand critical-operation stoppage risk / Map operational impact during an incident",
       );
