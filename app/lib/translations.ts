@@ -186,7 +186,7 @@ export const translations = {
       },
       layersLabel: { jp: "対象領域", en: "Layers" },
       p1tag: { jp: "Product 01", en: "Product 01" },
-      p1name: { jp: "Pixie Defense Suite", en: "Pixie Defense Suite" },
+      p1name: { jp: "Pixie for Operations", en: "Pixie for Operations" },
       p1role: {
         jp: "重要業務停止リスクの対応基盤",
         en: "Response platform for critical-operation stoppage risk",
@@ -199,7 +199,7 @@ export const translations = {
         en: "Shows what would stop if a risk is left unaddressed, and what to defend first.",
       },
       p2tag: { jp: "Product 02", en: "Product 02" },
-      p2name: { jp: "Pixie Shield", en: "Pixie Shield" },
+      p2name: { jp: "Pixie for Code", en: "Pixie for Code" },
       p2role: {
         jp: "開発現場向けの脆弱性対応基盤",
         en: "Vulnerability response platform for development teams",
@@ -378,8 +378,6 @@ export const translations = {
         jp: "関心のある製品 · Product",
         en: "Product of interest",
       },
-      product1: { jp: "Pixie Defense Suite", en: "Pixie Defense Suite" },
-      product2: { jp: "Pixie Shield", en: "Pixie Shield" },
       product3: {
         jp: "まだ決まっていない / 相談しながら整理したい",
         en: "Not decided yet / want to figure it out together",
