@@ -3,6 +3,7 @@ import { useMemo } from "react";
 import { useFetcher } from "react-router";
 
 import { tr, useLang } from "~/lib/i18n";
+import type { Lang } from "~/lib/translations";
 
 import {
   KIND_VALUES,
@@ -69,13 +70,24 @@ function buildFormData(value: ContactFormInput): FormData {
   return fd;
 }
 
-function ErrorBanner({ message }: { message: string }) {
+function ErrorBanner({ message, lang }: { message: string; lang: Lang }) {
   return (
     <div
       role="alert"
       className="border-shu bg-accent-wash text-shu-700 mb-6 rounded-sm border px-4 py-3 font-sans text-[13px]"
     >
-      {message}
+      <p className="m-0">{message}</p>
+      <p className="m-0 mt-2">
+        {tr(lang, "contact.form.facebookFallback.note")}{" "}
+        <a
+          href="https://www.facebook.com/shodohq/"
+          target="_blank"
+          rel="noopener noreferrer"
+          className="text-shu border-shu/40 border-b font-sans text-[13px] no-underline"
+        >
+          {tr(lang, "contact.form.facebookFallback.linkLabel")}
+        </a>
+      </p>
     </div>
   );
 }
@@ -218,7 +230,12 @@ export function ContactForm() {
             void form.handleSubmit();
           }}
         >
-          {submitError && <ErrorBanner message={submitError} />}
+          {submitError && (
+            <ErrorBanner
+              message={submitError}
+              lang={lang}
+            />
+          )}
 
           <div className="mb-5 grid grid-cols-1 gap-5 md:grid-cols-2">
             <form.Field

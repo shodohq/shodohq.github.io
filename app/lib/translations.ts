@@ -444,6 +444,16 @@ export const translations = {
           en: "Back to the form",
         },
       },
+      facebookFallback: {
+        note: {
+          jp: "フォームから送信できない場合は、Facebook にてご連絡ください。",
+          en: "If the form isn't working, please contact us on Facebook.",
+        },
+        linkLabel: {
+          jp: "Facebook でお問い合わせ",
+          en: "Contact us on Facebook",
+        },
+      },
       errors: {
         required: {
           jp: "この項目は必須です。",
@@ -454,8 +464,8 @@ export const translations = {
           en: "Please enter a valid email address.",
         },
         submitFailed: {
-          jp: "送信に失敗しました。しばらく経ってから再度お試しください。",
-          en: "Submission failed. Please try again later.",
+          jp: "送信に失敗しました。",
+          en: "Submission failed.",
         },
       },
     },
